@@ -4,6 +4,7 @@ To Do:
 -change connection messages into a synchronised method the ui calls to get the message
 -change error messages to dialogue box popups
 -Use a safer method than stop() to exit threads
+-modify how server obtains IP address
 -Change code to allow for sending/recieving more than just text
 -Implement a way for a server to broadcast its ip to any clients running uchat
 -document all classes
