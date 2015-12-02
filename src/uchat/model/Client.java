@@ -1,47 +1,88 @@
 package uchat.model;
 
+import java.awt.image.BufferedImage;
 import java.net.*;
 import java.io.*;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Client implements Runnable
 {
     private Socket socket = null;
     private Thread thread = null;
-    private DataInputStream streamIn = null;
-    private DataOutputStream streamOut = null;
+    /*private DataInputStream streamIn = null;
+    private DataOutputStream streamOut = null;*/
+    private ObjectInputStream streamIn = null;
+    private ObjectOutputStream streamOut = null;
     private ClientThread client = null;
+    private String id;
+    private String name;
+    private BufferedImage pic;
+    private ArrayList<Message> messageBuffer;
+    private Message fromUI;
+    private final Object moniter = new Object();
 
-    public Client(String serverName, int serverPort)
-    {  
-        System.out.println("Establishing connection. Please wait ...");
+    public Client(String serverName, int serverPort, String name, 
+            BufferedImage pic)
+    {
+        this.name = name;
+        this.pic = pic;
+        messageBuffer = new ArrayList<>();
+        fromUI = null;
+        id = "";
+        //System.out.println("Establishing connection. Please wait ...");
+        addMessage(new Message("Establishing connection. Please wait ...", 
+                Message.messageType.ALERT));
         try
         {  
             socket = new Socket(serverName, serverPort);
-            System.out.println("Connected: " + socket);
+            id = socket.toString();
+            //System.out.println("Connected: " + socket);
+            addMessage(new Message("Connected: " + socket, 
+                    Message.messageType.ALERT));
             start();
         }
         catch(UnknownHostException uhe)
         {  
-            System.out.println("Host unknown: " + uhe.getMessage()); 
+            //System.out.println("Host unknown: " + uhe.getMessage());
+            addMessage(new Message("Host unknown: " + uhe.getMessage(), 
+                    Message.messageType.ERROR));
         }
         catch(IOException ioe)
         {  
-            System.out.println("Unexpected exception: " + ioe.getMessage()); 
+            //System.out.println("Unexpected exception: " + ioe.getMessage());
+            addMessage(new Message("Unexpected exception: " + ioe.getMessage(), 
+                    Message.messageType.ERROR));
         }
     }
     
+    protected synchronized void addMessage(Message msg)
+    {
+        messageBuffer.add(msg);
+    }
+    
+    public synchronized ArrayList<Message> getMessages()
+    {
+        ArrayList<Message> temp = messageBuffer;
+        messageBuffer = new ArrayList<>();
+        return temp;
+    }
+    
     @Override
-    public void run()
+    /*public void run()
     {  
+        System.out.println("run");
         while (thread != null)
         {  
             try
             {
                 Scanner in = new Scanner(System.in);
-                streamOut.writeUTF(in.nextLine());
+                String temp = in.nextLine();
+                streamOut.writeUTF(temp);
                 //streamOut.writeUTF(streamIn.readLine());
                 streamOut.flush();
+                
             }
             catch(IOException ioe)
             {  
@@ -49,9 +90,76 @@ public class Client implements Runnable
                 stop();
             }
         }
+    }*/
+    public void run()
+    {
+        sendConnectionMessage(name);
+        while (thread != null)
+        {
+            try
+            {
+                /*Scanner in = new Scanner(System.in);
+                String temp = in.nextLine();
+                Message msg = new Message(name + ": " + temp, id, image);
+                streamOut.writeObject(msg);*/
+                synchronized (moniter) 
+                {
+                    moniter.wait();
+                }
+                Message msg = getMessageFromUI();
+                if (msg != null)
+                {
+                    streamOut.writeObject(msg);
+                    streamOut.flush();
+                }
+                //Thread.sleep(random.nextInt(500));
+            }
+            catch(IOException ioe)
+            {  
+                //System.out.println("Sending error: " + ioe.getMessage());
+                addMessage(new Message("Sending error: " + ioe.getMessage(), 
+                        Message.messageType.ERROR));
+                stop();
+            } 
+            catch (InterruptedException ie) 
+            {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ie);
+            }
+        }
     }
     
-    public void handle(String msg)
+    private synchronized Message getMessageFromUI()
+    {
+        Message temp = fromUI;
+        fromUI = null;
+        return temp;
+    }
+    
+    public void sendMessage(String text, BufferedImage img)
+    {
+        synchronized (this) 
+        {
+            fromUI = new Message(name, text, id, pic, img);
+            fromUI = new Message(name, text, id, null, null); //comment out this line when object sending is implemented
+        }
+        synchronized (moniter) 
+        {
+            moniter.notify();
+        }
+    }
+    
+    private void sendConnectionMessage(String name)
+    {
+        synchronized (this) 
+        {
+            fromUI = new Message(name, Message.messageType.CONNECT);
+        }
+        synchronized (moniter) 
+        {
+            moniter.notify();
+        }
+    }
+    /*public void handle(String msg)
     {  
         if (msg.equals(".bye"))
         {  
@@ -60,9 +168,25 @@ public class Client implements Runnable
         }
         else
             System.out.println(msg);
+    }*/
+    protected void handle(Message msg)
+    {
+        if (msg.getType() == Message.messageType.EXIT)
+        {  
+            stop();
+        }
+        else
+        {
+            if (msg.getId().equals(id))
+                addMessage(new Message("(You) " + msg.getName(), msg.getText(), 
+                        msg.getId(), msg.getPicture(), msg.getImage()));
+            else
+                addMessage(msg);
+            //System.out.println(msg.getName()+": "+msg.getText());
+        }
     }
     
-    public void start() throws IOException
+    /*public void start() throws IOException
     {  
         streamIn = new DataInputStream(System.in);
         streamOut = new DataOutputStream(socket.getOutputStream());
@@ -70,6 +194,17 @@ public class Client implements Runnable
         {  
             client = new ClientThread(this, socket);
             thread = new Thread(this);                   
+            thread.start();
+        }
+    }*/
+    public void start() throws IOException
+    {  
+        //streamIn = new ObjectInputStream(System.in);
+        streamOut = new ObjectOutputStream(socket.getOutputStream());
+        if (thread == null)
+        {  
+            client = new ClientThread(this, socket);
+            thread = new Thread(this);  
             thread.start();
         }
     }
@@ -92,21 +227,12 @@ public class Client implements Runnable
         }
         catch(IOException ioe)
         {  
-            System.out.println("Error closing ..."); 
+            //System.out.println("Error closing ...");
+            addMessage(new Message("Error closing: " + ioe.getMessage(), 
+                    Message.messageType.ERROR));
         }
         client.close();  
         client.stop();
     }
     
-    public static void main(String args[])
-    {  
-        Client client = null;
-        if (args.length != 2)
-        {
-            //System.out.println("Usage: java ChatClient host port");
-            client = new Client("0.0.0.0", 12345);
-        }
-        else
-            client = new Client(args[0], Integer.parseInt(args[1]));
-   }
 }
