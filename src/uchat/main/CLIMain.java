@@ -22,12 +22,14 @@ import uchat.model.*;
  */
 public class CLIMain 
 {
-    static final int DELAY = 200;
+    static final int DELAY = 100;
     static final int PORT = 12345;
+    //Adjust this to wherever the default user picture is located
     static final String DEFAULT_IMAGE = "C:/Users/David/Documents/NetBeansProjects/UChat/src/uchat/images/defaultUser.png";
     static String name;
     static BufferedImage pic;
     static final String DEFAULT_NAME = "Anonymous";
+    static ArrayList<User> users;
     
     /**
      * @param args the command line arguments
@@ -36,6 +38,7 @@ public class CLIMain
     {
         name = DEFAULT_NAME;
         pic = null;
+        users = new ArrayList<>();
         try {
             pic = ImageIO.read(new File(DEFAULT_IMAGE));
         } catch (IOException e) {
@@ -103,7 +106,7 @@ public class CLIMain
         });
         t.start();
         
-        startChat("0.0.0.0", PORT);
+        startChat("0.0.0.0", PORT, server);
     }
 
     private static void joinChat() 
@@ -113,7 +116,7 @@ public class CLIMain
         String ip = in.nextLine();
         if (ip.equals(""))
             ip = "0.0.0.0";
-        startChat(ip, PORT);
+        startChat(ip, PORT, null);
     }
 
     private static void changeName() 
@@ -162,22 +165,29 @@ public class CLIMain
         }
     }
 
-    private static void startChat(String ip, int port) 
+    private static void startChat(String ip, int port, Server server) 
     {
-        Client client = new Client(ip, PORT, name, pic);
+        Client client = new Client(ip, port, name, pic);
         Timer t = new Timer(DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 ArrayList<Message> output = client.getMessages();
                 for (Message m : output)
                 {
-                    System.out.println(m.getName() + ": " + m.getText());
+                    if (m.getType() == Message.messageType.TEXT)
+                        System.out.println(m.getName() + ": " + m.getText());
+                    else
+                        System.out.println(m.getText());
                 }
             }
         });
         t.start();
+        
         System.out.println("Welcome to UChat. Type any text and press enter to send a message");
-        System.out.println("To send an image, end your message with a *");
+        //System.out.println("To send an image, end your message with a *");
+        System.out.println("Enter .bye to exit the chat room");
+        System.out.println("Sever tools: Enter .list to list every client in the chat room");
+        System.out.println("Sever tools: Enter .ban followed by an id# obtained from .list to ban that corresponding user."); 
         while (true) 
         {     
             Scanner in = new Scanner(System.in);
@@ -205,10 +215,38 @@ public class CLIMain
                         temp = null;
                     }
                 }
-                client.sendMessage(input, temp);
+                if (input.equals(".list") && server != null)
+                    listUsers(server);
+                else if (input.startsWith(".ban") && server != null)
+                    banUser(server, input);
+                else    
+                    client.sendMessage(input, temp);
             }
             if (input.equals(".bye"))
                 break;
+        }
+    }
+
+    private static void listUsers(Server server) 
+    {
+        users = server.getUsers();
+        System.out.println("There are " + users.size() + " users in the chat room.");
+        System.out.printf("%-7s %-17s %-27s%n", "ID", "IP Address", "Name");
+        for (User u : users)
+        {
+            System.out.printf("%-7s %-17s %-27s%n", u.getId(), u.getAddress(), u.getName());
+        }
+    }
+
+    private static void banUser(Server server, String input) {
+        try
+        {
+            int ID = Integer.parseInt(input.substring(4).trim());
+            server.banUser(ID);
+        }
+        catch (Exception e)
+        {
+            System.out.println("No such user ID");
         }
     }
 }

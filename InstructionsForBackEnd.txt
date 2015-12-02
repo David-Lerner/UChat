@@ -9,7 +9,7 @@ these can be reteieved by calling server.getMessages()
 This will return an ArrayList<Message> of all the server's messages.
 For each Message, message.getText and message.getName can be used 
 	to get the sender name and text of the message
-A timer can be used to get the messages from the server at aregular interval
+A timer can be used to get the messages from the server at a regular interval
 see CLIMain as an example of how to do this
 
 A client must also be created for both the one hosting and those who join:
@@ -41,7 +41,25 @@ message.getType()  -returns the Message.messageType
 There were other things I had wanted to implement, but they were causing
 a lot of issues so I reverted my progress.
 As it is now, the network layer is a complex mess of threads;
-if there is an error, it's better to restart the app then try to let it fix itself
+if there is an error, it's better to restart the app then to try to let it fix itself
 I will continue to update the app until Thursday.
+
+UPDATE: Added moderation tools
+To exit a client from the chat server, the client sends a message .bye;
+client.sendMessage(".bye", null);
+
+The one hosting the chat can obtain a list of users by calling:
+server.getUsers(); returns an ArrayList<User> of users
+User objects have the following accessor methods:
+getName()     -user name
+getAddress()  -user ip address
+getID()       -unique ID
+isBanned()    -whether user is banned
+You may call getUsers at intervals with a timer to have a continuous display 
+
+Users may be banned by calling:
+server.banUser(int userID); where userID is an id obtained from User.getID() 
+
+See CLIMain for an example of how a UI implements these functions
 
 Contact me at dale7642@gmail.com for any questions

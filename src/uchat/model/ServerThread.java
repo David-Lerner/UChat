@@ -12,6 +12,8 @@ public class ServerThread extends Thread
     private DataOutputStream streamOut = null;*/
     private ObjectInputStream streamIn = null;
     private ObjectOutputStream streamOut = null;
+    private boolean banned;
+    private String address;
 
     public ServerThread(Server serverIn, Socket socketIn)
     {  
@@ -19,6 +21,8 @@ public class ServerThread extends Thread
         server = serverIn;
         socket = socketIn;
         ID = socket.getPort();
+        address = socket.getInetAddress().toString();
+        banned = false;
     }
     
     /*public void send(String msg)
@@ -84,7 +88,15 @@ public class ServerThread extends Thread
         {  
             try
             {  
-                server.handle(ID, (Message) streamIn.readObject());
+                Message msg = (Message) streamIn.readObject();
+                if (!banned || msg.getType() != Message.messageType.TEXT || msg.getText().equals(".bye"))
+                    server.handle(ID, msg);
+                else
+                {
+                    server.addMessage(new Message(msg.getName() + " was blocked from posting.", Message.messageType.ALERT));
+                    server.handle(ID, new Message(socket.getInetAddress().toString(), 
+                            Message.messageType.BAN));
+                }
             }
             catch(IOException ioe)
             {  
@@ -130,4 +142,13 @@ public class ServerThread extends Thread
         if (streamOut != null) 
             streamOut.close();
     }
+
+    protected void setBanned(boolean banned) {
+        this.banned = banned;
+    }
+
+    protected boolean isBanned() {
+        return banned;
+    }
+    
 }

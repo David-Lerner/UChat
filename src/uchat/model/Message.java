@@ -2,7 +2,6 @@ package uchat.model;
 
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
-import java.util.ArrayList;
 
 /**
  *
@@ -23,7 +22,8 @@ public class Message implements Serializable
         ALERT,
         ERROR,
         CONNECT,
-        EXIT
+        EXIT,
+        BAN
     }
 
     public Message(String name, String text, String id, BufferedImage picture, BufferedImage image) 
@@ -40,9 +40,18 @@ public class Message implements Serializable
     {
         name = "UChat";
         this.text = text;
+        this.id = "";
         this.type = type;
     }
 
+    public Message(String name, String text, messageType type)
+    {
+        this.name = name;
+        this.text = text;
+        this.id = text;
+        this.type = type;
+    }
+    
     public String getName() {
         return name;
     }

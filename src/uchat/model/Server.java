@@ -12,11 +12,15 @@ public class Server implements Runnable
     private int clientCount = 0;
     private ArrayList<Message> messageBuffer;
     private ArrayList<Message> messageLog;
+    private ArrayList<User> users;
+    private ArrayList<String> banned;
 
     public Server(int port)
     {  
         messageBuffer = new ArrayList<>();
         messageLog = new ArrayList<>();
+        users = new ArrayList<>();
+        banned = new ArrayList<>();
         try
         {  
             //System.out.println("Binding to port " + port + ", please wait  ...");
@@ -41,6 +45,11 @@ public class Server implements Runnable
         messageBuffer.add(msg);
     }
     
+    /**
+     * Used to obtain the connection/error messages of the chat server.
+     * 
+     * @return a list of Message objects
+     */
     public synchronized ArrayList<Message> getMessages()
     {
         ArrayList<Message> temp = messageBuffer;
@@ -109,25 +118,58 @@ public class Server implements Runnable
     }*/
     protected synchronized void handle(int ID, Message msg)
     {  
+        int pos = findClient(ID);
         if (msg.getText().equals(".bye") || msg.getType() == Message.messageType.EXIT)
         {  
-            clients[findClient(ID)].send(new Message("", Message.messageType.EXIT));
-            remove(ID);
+            clients[pos].send(new Message("", Message.messageType.EXIT));
+            
+            Message temp = new Message(msg.getName() + " has left the chat.", 
+                    Message.messageType.ALERT);
+            messageLog.add(temp);
             for (int i = 0; i < clientCount; i++)
-                clients[i].send(new Message(msg.getName() + " has left the chat.", Message.messageType.ALERT));
+            {
+                if (i != pos)
+                    clients[i].send(temp);
+            }
+            remove(ID);
         }
         else if (msg.getType() == Message.messageType.CONNECT)
         {
+            users.add(new User(msg.getName(), msg.getText(), ID));
             for (Message m : messageLog)
             {
-                clients[findClient(ID)].send(m);
+                clients[pos].send(m);
             }
+            
+            if (isBanned(msg.getText()))
+            {
+                clients[pos].setBanned(true);
+                clients[pos].send(new Message("Your IP address (" + msg.getText() + ") is banned from posting.", 
+                    Message.messageType.ALERT));
+            }
+            Message temp = new Message(msg.getName() + " has joined the chat.", 
+                    Message.messageType.ALERT);
+            messageLog.add(temp);
             for (int i = 0; i < clientCount; i++)
             {
-                if (i != findClient(ID))
-                    clients[i].send(new Message(msg.getName() + 
-                        " has joined the chat.", Message.messageType.ALERT));
+                if (i != pos)
+                    clients[i].send(temp);
             }
+        }
+        else if (msg.getType() == Message.messageType.BAN)
+        {
+            if (!clients[pos].isBanned())
+            {
+                clients[pos].setBanned(true);
+                Message temp = new Message(msg.getName() + " has been banned from posting.", 
+                        Message.messageType.ALERT);
+                messageLog.add(temp);
+                for (int i = 0; i < clientCount; i++)
+                    clients[i].send(temp);
+            }
+            
+            clients[pos].send(new Message("Your IP address (" + msg.getText() + ") is banned from posting.", 
+                    Message.messageType.ALERT));
         }
         else
         {
@@ -139,6 +181,11 @@ public class Server implements Runnable
     
    protected synchronized void remove(int ID)
    {  
+        for (int i = 0; i < users.size(); i++)
+        {
+            if (users.get(i).getId() == ID)
+                users.remove(i);
+        }
         int pos = findClient(ID);
         if (pos >= 0)
         {  
@@ -164,7 +211,7 @@ public class Server implements Runnable
         }
     }
    
-    private void addThread(Socket socket)
+    private synchronized void addThread(Socket socket)
     {  
         if (clientCount < clients.length)
         {  
@@ -193,4 +240,46 @@ public class Server implements Runnable
         }
     }
     
+    /**
+     * Used to obtain a list of the users currently connected to the server
+     * 
+     * @return a list of User objects
+     */
+    public synchronized ArrayList<User> getUsers()
+    {
+        return users;
+    }
+    
+    /**
+     * Used to ban a user given by an ID obtained by User.getID()
+     * 
+     * @param userID the userID of the user to be banned
+     */
+    public synchronized void banUser(int userID)
+    {
+        for (User u : users)
+        {
+            if (u.getId() == userID)
+            {
+                u.setBanned(true);
+                banned.add(u.getAddress());
+                handle(u.getId(), new Message(u.getName(), u.getAddress(), 
+                        Message.messageType.BAN));
+                return;
+            }
+        }
+        addMessage(new Message("Error: user ID " + userID + " not found.", 
+                Message.messageType.ERROR));
+    }
+    
+    private boolean isBanned(String address)
+    {
+        System.out.println("ban test");
+        for (String s : banned)
+        {
+            if (s.equals(address))
+                return true;
+        }
+        return false;
+    }
 }

@@ -22,6 +22,7 @@ public class Client implements Runnable
     private ArrayList<Message> messageBuffer;
     private Message fromUI;
     private final Object moniter = new Object();
+    private boolean hasLog;
 
     public Client(String serverName, int serverPort, String name, 
             BufferedImage pic)
@@ -29,8 +30,8 @@ public class Client implements Runnable
         this.name = name;
         this.pic = pic;
         messageBuffer = new ArrayList<>();
-        fromUI = null;
         id = "";
+        hasLog = false;
         //System.out.println("Establishing connection. Please wait ...");
         addMessage(new Message("Establishing connection. Please wait ...", 
                 Message.messageType.ALERT));
@@ -38,6 +39,8 @@ public class Client implements Runnable
         {  
             socket = new Socket(serverName, serverPort);
             id = socket.toString();
+            fromUI = new Message(name, socket.getLocalAddress().toString(), Message.messageType.CONNECT);
+            //System.out.println(socket.getLocalAddress().toString());
             //System.out.println("Connected: " + socket);
             addMessage(new Message("Connected: " + socket, 
                     Message.messageType.ALERT));
@@ -62,6 +65,11 @@ public class Client implements Runnable
         messageBuffer.add(msg);
     }
     
+    /**
+     * Used to obtain all the connection/error/chat messages received by the client.
+     * 
+     * @return a list of Message objects
+     */
     public synchronized ArrayList<Message> getMessages()
     {
         ArrayList<Message> temp = messageBuffer;
@@ -93,7 +101,6 @@ public class Client implements Runnable
     }*/
     public void run()
     {
-        sendConnectionMessage(name);
         while (thread != null)
         {
             try
@@ -104,11 +111,14 @@ public class Client implements Runnable
                 streamOut.writeObject(msg);*/
                 synchronized (moniter) 
                 {
-                    moniter.wait();
+                    if (hasLog)
+                        moniter.wait();
                 }
                 Message msg = getMessageFromUI();
                 if (msg != null)
                 {
+                    if (msg.getType() == Message.messageType.CONNECT)
+                        hasLog = true;
                     streamOut.writeObject(msg);
                     streamOut.flush();
                 }
@@ -135,6 +145,12 @@ public class Client implements Runnable
         return temp;
     }
     
+    /**
+     * Used by the UI to send chat messages.
+     * 
+     * @param text The text message to be sent to the chat server
+     * @param img An accompanying image (not supported -nothing will be sent)
+     */
     public void sendMessage(String text, BufferedImage img)
     {
         synchronized (this) 
@@ -148,17 +164,6 @@ public class Client implements Runnable
         }
     }
     
-    private void sendConnectionMessage(String name)
-    {
-        synchronized (this) 
-        {
-            fromUI = new Message(name, Message.messageType.CONNECT);
-        }
-        synchronized (moniter) 
-        {
-            moniter.notify();
-        }
-    }
     /*public void handle(String msg)
     {  
         if (msg.equals(".bye"))

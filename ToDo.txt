@@ -6,8 +6,5 @@ To Do:
 -Implement a way for a server to broadcast its ip to any clients running uchat
 
 -exit threads on error
--add way log of all chats to new person in chatroom
--make server tell all clients when new client joins
--add server admin tools
 -document all classes
 
