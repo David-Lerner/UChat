@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Scanner;
 import javax.imageio.ImageIO;
@@ -30,6 +31,7 @@ public class CLIMain
     static BufferedImage pic;
     static final String DEFAULT_NAME = "Anonymous";
     static ArrayList<User> users;
+    static String selfAddress;
     
     /**
      * @param args the command line arguments
@@ -44,8 +46,25 @@ public class CLIMain
         } catch (IOException e) {
             System.out.println("Failed to load image");
         }
+        selfAddress = getLocalAddress();
         
         Welcome();
+    }
+    
+    private static String getLocalAddress() 
+    {
+        String temp ="0.0.0.0";
+        try 
+        {
+            Socket s = new Socket("www.google.com", 80);
+            temp = s.getLocalAddress().getHostAddress();
+            s.close();
+        } 
+        catch (Exception ex) 
+        {
+            System.out.println("Error: cannot obtain IP address of this device");
+        }
+        return temp;
     }
     
     private static void Welcome()
@@ -87,7 +106,7 @@ public class CLIMain
                     break;        
             }
         }
-        
+        System.exit(0);
     }
 
     private static void hostChat() 
@@ -106,7 +125,7 @@ public class CLIMain
         });
         t.start();
         
-        startChat("0.0.0.0", PORT, server);
+        startChat(selfAddress, PORT, server);
     }
 
     private static void joinChat() 
@@ -115,7 +134,7 @@ public class CLIMain
         Scanner in = new Scanner(System.in);
         String ip = in.nextLine();
         if (ip.equals(""))
-            ip = "0.0.0.0";
+            ip = selfAddress;
         startChat(ip, PORT, null);
     }
 

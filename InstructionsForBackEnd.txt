@@ -47,6 +47,7 @@ I will continue to update the app until Thursday.
 UPDATE: Added moderation tools
 To exit a client from the chat server, the client sends a message .bye;
 client.sendMessage(".bye", null);
+Use the getLocalAddress() method in CLIMain to get the IP address of the local device
 
 The one hosting the chat can obtain a list of users by calling:
 server.getUsers(); returns an ArrayList<User> of users
