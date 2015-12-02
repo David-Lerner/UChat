@@ -89,7 +89,7 @@ public class CLIMain
 
     private static void hostChat() 
     {
-        Server server = new Server(12345);
+        Server server = new Server(PORT);
         
         Timer t = new Timer(DELAY, new ActionListener() {
             @Override
@@ -164,7 +164,7 @@ public class CLIMain
 
     private static void startChat(String ip, int port) 
     {
-        Client client = new Client(ip, 12345, name, pic);
+        Client client = new Client(ip, PORT, name, pic);
         Timer t = new Timer(DELAY, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {

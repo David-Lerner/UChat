@@ -1,0 +1,41 @@
+Using the client/server classes should be relativlely simple.
+
+Use CLIMain.java in src\uchat\main as an example of how a UI uses the client/server
+
+First a server must be created: 
+Server server = new Server(PORT); where PORT is the port# our app will use
+The server will generate connection and error messages,
+these can be reteieved by calling server.getMessages()
+This will return an ArrayList<Message> of all the server's messages.
+For each Message, message.getText and message.getName can be used 
+	to get the sender name and text of the message
+A timer can be used to get the messages from the server at aregular interval
+see CLIMain as an example of how to do this
+
+A client must also be created for both the one hosting and those who join:
+Client client = new Client(ip, PORT, name, pic);  
+where ip is the ip address, PORT is the app's port #, name is the user's name
+and pic is the users pic. Sending images over a stream is not available at this time.
+Like server getMessages() must be called to retrieve connection/error messages,
+as well as the chat communications. 
+Use a timer, like with the server
+Additionally messages must be sent from the UI to be streamed to the server:
+client.sendMessage(text_message, image);
+where text_message is the chat text and image is an image to be sent
+
+Messages can be differentiated by their enumeration types:
+Message.messageType.ERROR (error messages)
+Message.messageType.TEXT (these are the chat messages from the client)
+Message.messageType.ALERT (Connection messages)
+Message.messageType.CONNECT (ignore for now)
+Message.messageType.EXIT (used to signal that client is leaving, can ignore)
+Different message types can be differentiated by color and/or location by the GUI
+messages from the client and server should be differentiated visually as well
+
+There were other things I had wanted to implement, but they were causing
+a lot of issues so I reverted my progress.
+As it is now, the network layer is a complex mess of threads;
+if there is an error, it's better to restart the app then try to let it fix itself
+I will continue to update the app until Thursday.
+
+Contact me at dale7642@gmail.com for any questions

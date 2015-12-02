@@ -1,10 +1,13 @@
 To Do:
--change console input into a synchronized method to get text from the ui
--change console output into a synchronised method the ui calls to get the text
--change connection messages into a synchronised method the ui calls to get the message
--change error messages to dialogue box popups
--Use a safer method than stop() to exit threads
--modify how server obtains IP address
+
+-Make threads more efficient
 -Change code to allow for sending/recieving more than just text
+
 -Implement a way for a server to broadcast its ip to any clients running uchat
+
+-exit threads on error
+-add way log of all chats to new person in chatroom
+-make server tell all clients when new client joins
+-add server admin tools
 -document all classes
+
