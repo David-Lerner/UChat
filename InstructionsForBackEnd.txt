@@ -14,7 +14,7 @@ see CLIMain as an example of how to do this
 
 A client must also be created for both the one hosting and those who join:
 Client client = new Client(ip, PORT, name, pic);  
-where ip is the ip address, PORT is the app's port #, name is the user's name
+ip is the ip address of the server, PORT is the app's port #, name is the user's name
 and pic is the users pic. Sending images over a stream is not available at this time.
 Like server getMessages() must be called to retrieve connection/error messages,
 as well as the chat communications. 
@@ -22,6 +22,7 @@ Use a timer, like with the server
 Additionally messages must be sent from the UI to be streamed to the server:
 client.sendMessage(text_message, image);
 where text_message is the chat text and image is an image to be sent
+image sending is not supported
 
 Messages can be differentiated by their enumeration types:
 Message.messageType.ERROR (error messages)
@@ -31,6 +32,11 @@ Message.messageType.CONNECT (ignore for now)
 Message.messageType.EXIT (used to signal that client is leaving, can ignore)
 Different message types can be differentiated by color and/or location by the GUI
 messages from the client and server should be differentiated visually as well
+Message attributes that can be retrieved:
+message.getText()
+message.getName()
+message.getID()    -string containing clients ip/port# 
+message.getType()  -returns the Message.messageType
 
 There were other things I had wanted to implement, but they were causing
 a lot of issues so I reverted my progress.
