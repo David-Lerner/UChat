@@ -17,7 +17,7 @@ public class Client implements Runnable
     private ObjectOutputStream streamOut = null;
     private ClientThread client = null;
     private String id;
-    public String name;
+    private String name;
     private BufferedImage pic;
     private ArrayList<Message> messageBuffer;
     private Message fromUI;
