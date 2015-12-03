@@ -122,7 +122,8 @@ public class ChatRoomController implements Controller
     user.sendMessage(".bye", null);
     HashMap options = new HashMap();
     options.put("name", name);
-    new InitialDashboardController().changeStage(stage, options);
+    //new InitialDashboardController().changeStage(stage, options);
+    new WelcomeController().launch(stage);
   }
 
   private void listUsers(Server server) {
@@ -151,7 +152,7 @@ public class ChatRoomController implements Controller
     try {
       int ID = Integer.parseInt(input.substring(4).trim());
       server.banUser(ID);
-      user.sendMessage(".bye", null);
+      //user.sendMessage(".bye", null);
     } catch (Exception e) {
       System.out.println("No such user ID");
     }
