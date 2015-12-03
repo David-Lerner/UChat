@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import uchat.main.Main;
-import uchat.model.Client;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -17,7 +16,6 @@ public class InitialDashboardController implements Controller
   private Parent parent;
   private Scene scene;
   private Stage stage;
-  private Client user;
   @FXML
   private Text userName;
 
@@ -34,7 +32,6 @@ public class InitialDashboardController implements Controller
     }
   }
 
-  @Override
   public void changeStage(Stage stage, HashMap options) {
     stage.setScene(scene);
     user = (Client) options.get("user");
@@ -42,14 +39,6 @@ public class InitialDashboardController implements Controller
     this.stage = stage;
     stage.show();
   }
-
-//  @FXML
-//  //temporary for mockup
-//  private void handleButtonPress() {
-//    HashMap options = new HashMap();
-//    options.put("name", userName.getText().trim());
-//    new ChatRoomController().changeStage(stage, options);
-//  }
 
   @FXML
   private void handleJoin() {
