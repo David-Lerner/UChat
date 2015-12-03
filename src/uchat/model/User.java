@@ -2,42 +2,41 @@ package uchat.model;
 
 /**
  * Used to hold information about the users in a chat room
- * 
+ *
  * @author David
  */
-public class User 
+public class User
 {
-    private String name;
-    private String address;
-    private int id;
-    private boolean banned;
-    
-    public User(String name, String address, int id) 
-    {
-        this.name = name;
-        this.address = address;
-        this.id = id;
-        banned = false;
-    }
+  private String name;
+  private String address;
+  private int id;
+  private boolean banned;
 
-    public String getName() {
-        return name;
-    }
+  public User(String name, String address, int id) {
+    this.name = name;
+    this.address = address;
+    this.id = id;
+    banned = false;
+  }
 
-    public String getAddress() {
-        return address;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public int getId() {
-        return id;
-    }
+  public String getAddress() {
+    return address;
+  }
 
-    public boolean isBanned() {
-        return banned;
-    }
+  public int getId() {
+    return id;
+  }
 
-    protected void setBanned(boolean banned) {
-        this.banned = banned;
-    }
-    
+  public boolean isBanned() {
+    return banned;
+  }
+
+  protected void setBanned(boolean banned) {
+    this.banned = banned;
+  }
+
 }

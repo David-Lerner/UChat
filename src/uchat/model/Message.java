@@ -4,80 +4,76 @@ import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
 /**
- *
  * @author David
  */
 public class Message implements Serializable
 {
-    private String text;
-    private String name;
-    private String id;
-    private BufferedImage picture;
-    private BufferedImage image;
-    private messageType type;
-    
-    public enum messageType 
-    {
-        TEXT,
-        ALERT,
-        ERROR,
-        CONNECT,
-        EXIT,
-        BAN
-    }
+  private String text;
+  private String name;
+  private String id;
+  private BufferedImage picture;
+  private BufferedImage image;
+  private messageType type;
 
-    public Message(String name, String text, String id, BufferedImage picture, BufferedImage image) 
-    {
-        this.name = name;
-        this.text = text;
-        this.id = id;
-        this.picture = picture;
-        this.image = image;
-        type = messageType.TEXT;
-    }
+  public Message(String name, String text, String id, BufferedImage picture, BufferedImage image) {
+    this.name = name;
+    this.text = text;
+    this.id = id;
+    this.picture = picture;
+    this.image = image;
+    type = messageType.TEXT;
+  }
 
-    public Message(String text, messageType type)
-    {
-        name = "UChat";
-        this.text = text;
-        this.id = "";
-        this.type = type;
-    }
+  public Message(String text, messageType type) {
+    name = "UChat";
+    this.text = text;
+    this.id = "";
+    this.type = type;
+  }
 
-    public Message(String name, String text, messageType type)
-    {
-        this.name = name;
-        this.text = text;
-        this.id = text;
-        this.type = type;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public BufferedImage getImage() {
-        return image;
-    }
+  public Message(String name, String text, messageType type) {
+    this.name = name;
+    this.text = text;
+    this.id = text;
+    this.type = type;
+  }
 
-    public String getId() {
-        return id;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getText() {
-        return text;
-    }
+  public BufferedImage getImage() {
+    return image;
+  }
 
-    public messageType getType() {
-        return type;
-    }
+  public void setImage(BufferedImage image) {
+    this.image = image;
+  }
 
-    public BufferedImage getPicture() {
-        return picture;
-    }
+  public String getId() {
+    return id;
+  }
 
-    public void setImage(BufferedImage image) {
-        this.image = image;
-    }
-    
+  public String getText() {
+    return text;
+  }
+
+  public messageType getType() {
+    return type;
+  }
+
+  public BufferedImage getPicture() {
+    return picture;
+  }
+
+  public enum messageType
+  {
+    TEXT,
+    ALERT,
+    ERROR,
+    CONNECT,
+    EXIT,
+    BAN
+  }
+
 }

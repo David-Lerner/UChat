@@ -58,20 +58,21 @@ public class ChatRoomController implements Controller
     users.getItems().add(user.name);
     this.stage = stage;
     stage.show();
-    Server server = new Server(Main.PORT);
-    Timer t = new Timer(50, new ActionListener()
-    {
-      @Override
-      public void actionPerformed(ActionEvent ae) {
-        ArrayList<Message> output = server.getMessages();
-        for (Message m : output) {
-          messageWindow.getItems().add(m.getText());
-//          System.out.println(m.getText());
+    if (options.containsKey("host")) {
+      Server server = new Server(Main.PORT);
+      Timer t = new Timer(50, new ActionListener()
+      {
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+          ArrayList<Message> output = server.getMessages();
+          for (Message m : output) {
+            messageWindow.getItems().add(m.getText());
+          }
         }
-      }
-    });
-    t.start();
-    user = new Client("0.0.0.0", Main.PORT, user.name, null);
+      });
+      t.start();
+    }
+    user = new Client((String) options.get("ip"), Main.PORT, user.name, null);
     Timer tt = new Timer(50, new ActionListener()
     {
       @Override
@@ -79,7 +80,6 @@ public class ChatRoomController implements Controller
         ArrayList<Message> output = user.getMessages();
         for (Message m : output) {
           messageWindow.getItems().add(m.getName() + ": " + m.getText());
-//          System.out.println(m.getName() + ": " + m.getText());
         }
       }
     });
@@ -90,8 +90,6 @@ public class ChatRoomController implements Controller
   @FXML
   private void handleMessage() {
     user.sendMessage(message.getText(), null);
-//    System.out.println(message.getText());
-//    messageWindow.getItems().add(user.name + ": " + message.getText());
     message.clear();
   }
 }
