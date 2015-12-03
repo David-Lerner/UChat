@@ -13,7 +13,7 @@ public class Main extends Application
   public static final int MIN_WIDTH = 300;
   public static final int MIN_HEIGHT = 350;
   public static final double OPACITY = 0.75;
-  public static final int PORT = 9001;
+  public static final int PORT = 12345;
   Client user;
 
   public static void main(String[] args) {

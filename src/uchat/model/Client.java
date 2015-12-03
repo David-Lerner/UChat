@@ -14,6 +14,7 @@ public class Client implements Runnable
 {
   private final Object moniter = new Object();
   public String name;
+  public ArrayList<User> users;
   private Socket socket = null;
   private Thread thread = null;
   /*private DataInputStream streamIn = null;
@@ -33,6 +34,7 @@ public class Client implements Runnable
     this.pic = pic;
     messageBuffer = new ArrayList<>();
     id = "";
+    users = new ArrayList<>();
     hasLog = false;
     //System.out.println("Establishing connection. Please wait ...");
     addMessage(new Message("Establishing connection. Please wait ...",
@@ -209,6 +211,10 @@ public class Client implements Runnable
     }
     client.close();
     client.stop();
+  }
+
+  public String getID() {
+    return id;
   }
 
 }

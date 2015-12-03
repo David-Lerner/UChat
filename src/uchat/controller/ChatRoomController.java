@@ -12,6 +12,7 @@ import uchat.main.Main;
 import uchat.model.Client;
 import uchat.model.Message;
 import uchat.model.Server;
+import uchat.model.User;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -26,6 +27,7 @@ public class ChatRoomController implements Controller
   private Parent parent;
   private Scene scene;
   private Stage stage;
+  private Server server;
   @FXML
   private ListView users;
   @FXML
@@ -37,6 +39,7 @@ public class ChatRoomController implements Controller
 
 
   public ChatRoomController() {
+    server = null;
     FXMLLoader fxmlLoader = new FXMLLoader(
         getClass().getResource("/uchat/view/chatRoomView.fxml")
     );
@@ -59,14 +62,20 @@ public class ChatRoomController implements Controller
     this.stage = stage;
     stage.show();
     if (options.containsKey("host")) {
-      Server server = new Server(Main.PORT);
+      server = new Server(Main.PORT);
       Timer t = new Timer(50, new ActionListener()
       {
         @Override
         public void actionPerformed(ActionEvent ae) {
-          ArrayList<Message> output = server.getMessages();
-          for (Message m : output) {
+          ArrayList<Message> messages = server.getMessages();
+          for (Message m : messages) {
             messageWindow.getItems().add(m.getText());
+          }
+          ArrayList<User> allUsers = server.getUsers();
+          for (User u : allUsers) {
+            if (! users.getItems().contains(u.getName())) {
+              users.getItems().add(u.getName());
+            }
           }
         }
       });
@@ -77,8 +86,8 @@ public class ChatRoomController implements Controller
     {
       @Override
       public void actionPerformed(ActionEvent ae) {
-        ArrayList<Message> output = user.getMessages();
-        for (Message m : output) {
+        ArrayList<Message> messages = user.getMessages();
+        for (Message m : messages) {
           messageWindow.getItems().add(m.getName() + ": " + m.getText());
         }
       }
@@ -89,7 +98,45 @@ public class ChatRoomController implements Controller
 
   @FXML
   private void handleMessage() {
-    user.sendMessage(message.getText(), null);
+    if (message.getText().startsWith(".list") && server != null) {
+      listUsers(server);
+    } else if (message.getText().startsWith(".ban") && server != null) {
+      banUser(server, message.getText());
+    } else {
+      user.sendMessage(message.getText(), null);
+    }
     message.clear();
+  }
+
+  private void listUsers(Server server) {
+    messageWindow.getItems().add(
+        "There are " + server.getUsers().size() + " users in the chat room."
+    );
+    messageWindow.getItems().add(String.format(
+        "%-7s %-17s %-27s%n", "ID", "IP Address", "Name"
+    ));
+    for (User u : server.getUsers()) {
+      messageWindow.getItems().add(String.format(
+          "%-7s %-17s %-27s%n", u.getId(), u.getAddress(), u.getName()
+      ));
+    }
+  }
+
+  private User findUser(Client client, Server server) {
+    for (User user : server.getUsers()) {
+      System.out.println(user);
+      if (user.getId() == Integer.parseInt(client.getID())) return user;
+    }
+    return null;
+  }
+
+  private void banUser(Server server, String input) {
+    try {
+      int ID = Integer.parseInt(input.substring(4).trim());
+      server.banUser(ID);
+      user.sendMessage(".bye", null);
+    } catch (Exception e) {
+      System.out.println("No such user ID");
+    }
   }
 }

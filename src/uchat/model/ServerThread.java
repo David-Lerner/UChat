@@ -83,7 +83,7 @@ public class ServerThread extends Thread
         if (! banned || msg.getType() != Message.messageType.TEXT || msg.getText().equals(".bye"))
           server.handle(ID, msg);
         else {
-          server.addMessage(new Message(msg.getName() + " was blocked from posting.", Message.messageType.ALERT));
+//          server.addMessage(new Message(msg.getName() + " was blocked from posting.", Message.messageType.ALERT));
           server.handle(ID, new Message(socket.getInetAddress().toString(),
               Message.messageType.BAN));
         }

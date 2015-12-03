@@ -120,7 +120,7 @@ public class Server implements Runnable
         clients[pos].send(m);
       }
 
-      if (isBanned(msg.getText())) {
+      if (isBanned(msg.getId())) {
         clients[pos].setBanned(true);
         clients[pos].send(new Message("Your IP address (" + msg.getText() + ") is banned from posting.",
             Message.messageType.ALERT));
@@ -137,6 +137,7 @@ public class Server implements Runnable
         clients[pos].setBanned(true);
         Message temp = new Message(msg.getName() + " has been banned from posting.",
             Message.messageType.ALERT);
+        addMessage(temp);
         messageLog.add(temp);
         for (int i = 0; i < clientCount; i++)
           clients[i].send(temp);
