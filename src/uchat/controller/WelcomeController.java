@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import uchat.main.Main;
-import uchat.model.Client;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -43,8 +42,9 @@ public class WelcomeController
   private void handleLogIn() {
     HashMap options = new HashMap();
     String name = userName.getText().trim();
-    Client user = new Client("0.0.0.0", Main.PORT, name, null);
-    options.put("user", user);
+//    Client user = new Client("0.0.0.0", Main.PORT, name, null);
+//    options.put("user", user);
+    options.put("name", name);
     new InitialDashboardController().changeStage(stage, options);
   }
 }

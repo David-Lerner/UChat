@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity"
-            maxWidth="-Infinity"
-            minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0"
-            prefWidth="550.0"
-            xmlns="http://javafx.com/javafx/8">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity" prefHeight="350.0" prefWidth="550.0"
+            xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1">
     <bottom>
         <VBox alignment="BOTTOM_LEFT" maxWidth="-Infinity" prefHeight="200.0"
               prefWidth="100.0" BorderPane.alignment="BOTTOM_LEFT">
@@ -46,6 +46,9 @@
                           AnchorPane.leftAnchor="0.0"
                           AnchorPane.rightAnchor="0.0"
                           AnchorPane.topAnchor="0.0"/>
+                <Button fx:id="exitButton" layoutX="4.0" layoutY="7.0"
+                        mnemonicParsing="false" onAction="#handleExit"
+                        prefHeight="27.0" prefWidth="120.0" text="exit"/>
             </children>
         </AnchorPane>
     </left>

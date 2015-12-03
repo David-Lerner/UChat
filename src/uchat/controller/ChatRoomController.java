@@ -24,6 +24,7 @@ import java.util.HashMap;
 public class ChatRoomController implements Controller
 {
   private Client user;
+  private String name;
   private Parent parent;
   private Scene scene;
   private Stage stage;
@@ -55,10 +56,12 @@ public class ChatRoomController implements Controller
   @Override
   public void changeStage(Stage stage, HashMap options) {
     stage.setScene(scene);
-    user = (Client) options.get("user");
-    userName.setText(user.name);
+//    user = (Client) options.get("user");
+    name = (String) options.get("name");
+    userName.setText(name);
     message.requestFocus();
-    users.getItems().add(user.name);
+    users.getItems().add("\n\n");
+    users.getItems().add(name);
     this.stage = stage;
     stage.show();
     if (options.containsKey("host")) {
@@ -81,7 +84,7 @@ public class ChatRoomController implements Controller
       });
       t.start();
     }
-    user = new Client((String) options.get("ip"), Main.PORT, user.name, null);
+    user = new Client((String) options.get("ip"), Main.PORT, name, null);
     Timer tt = new Timer(50, new ActionListener()
     {
       @Override
@@ -106,6 +109,14 @@ public class ChatRoomController implements Controller
       user.sendMessage(message.getText(), null);
     }
     message.clear();
+  }
+
+  @FXML
+  private void handleExit() {
+    user.sendMessage(".bye", null);
+    HashMap options = new HashMap();
+    options.put("name", name);
+    new InitialDashboardController().changeStage(stage, options);
   }
 
   private void listUsers(Server server) {

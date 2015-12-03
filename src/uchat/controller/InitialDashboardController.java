@@ -29,6 +29,7 @@ public class InitialDashboardController implements Controller
   private Scene scene;
   private Stage stage;
   private Client user;
+  private String name;
   @FXML
   private Text userName;
 
@@ -47,8 +48,8 @@ public class InitialDashboardController implements Controller
 
   public void changeStage(Stage stage, HashMap options) {
     stage.setScene(scene);
-    user = (Client) options.get("user");
-    userName.setText(user.name);
+    name = (String) options.get("name");
+    userName.setText(name);
     this.stage = stage;
     stage.show();
   }
@@ -67,9 +68,9 @@ public class InitialDashboardController implements Controller
           ip = ipTextField.getText().trim();
         }
         ipTextField.clear();
-        user = new Client(ip, Main.PORT, user.name, null);
         HashMap options = new HashMap();
-        options.put("user", user);
+//        options.put("user", user);
+        options.put("name", name);
         options.put("ip", ip);
         new ChatRoomController().changeStage(stage, options);
       }
@@ -91,7 +92,7 @@ public class InitialDashboardController implements Controller
   @FXML
   private void handleHost() {
     HashMap options = new HashMap();
-    options.put("user", user);
+    options.put("name", name);
     options.put("host", true);
     options.put("ip", "0.0.0.0");
     new ChatRoomController().changeStage(stage, options);
