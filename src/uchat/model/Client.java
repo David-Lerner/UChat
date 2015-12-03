@@ -1,8 +1,11 @@
 package uchat.model;
 
 import java.awt.image.BufferedImage;
-import java.net.*;
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,7 +20,7 @@ public class Client implements Runnable
     private ObjectOutputStream streamOut = null;
     private ClientThread client = null;
     private String id;
-    private String name;
+    public String name;
     private BufferedImage pic;
     private ArrayList<Message> messageBuffer;
     private Message fromUI;

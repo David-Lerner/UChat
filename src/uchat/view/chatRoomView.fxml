@@ -59,7 +59,7 @@
                     </VBox.margin>
                 </ListView>
                 <TextField fx:id="message" minWidth="50.0"
-                           onAction="#writeMessage" VBox.vgrow="ALWAYS">
+                           onAction="#handleMessage" VBox.vgrow="ALWAYS">
                     <VBox.margin>
                         <Insets bottom="5.0" right="10.0" top="5.0"/>
                     </VBox.margin>

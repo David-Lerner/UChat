@@ -2,8 +2,12 @@ package uchat.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import uchat.main.Main;
@@ -18,6 +22,10 @@ public class InitialDashboardController implements Controller
   private Scene scene;
   private Stage stage;
   private Client user;
+  @FXML
+  VBox buttonContainer;
+  @FXML
+  Button joinButton;
   @FXML
   private Text userName;
 
@@ -44,7 +52,17 @@ public class InitialDashboardController implements Controller
 
   @FXML
   private void handleJoin() {
+    joinButtonToTextField();
+  }
 
+  private void joinButtonToTextField() {
+    buttonContainer.getChildren().remove(joinButton);
+    TextField ipTextField = new TextField();
+    ipTextField.setPrefSize(200, 35);
+    ipTextField.setMaxWidth(200);
+    ipTextField.setAlignment(Pos.CENTER);
+    buttonContainer.getChildren().add(ipTextField);
+    ipTextField.requestFocus();
   }
 
   @FXML

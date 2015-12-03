@@ -6,24 +6,26 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity"
-            maxWidth="-Infinity"
-            minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0"
-            prefWidth="550.0"
-            xmlns="http://javafx.com/javafx/8">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity" prefHeight="350.0" prefWidth="550.0"
+            xmlns="http://javafx.com/javafx/8"
+            xmlns:fx="http://javafx.com/fxml/1">
     <center>
-        <VBox alignment="BOTTOM_CENTER" BorderPane.alignment="BOTTOM_CENTER">
+        <VBox fx:id="buttonContainer" alignment="BOTTOM_CENTER"
+              BorderPane.alignment="BOTTOM_CENTER">
             <children>
-                <Button alignment="CENTER" mnemonicParsing="false"
-                        onAction="#handleJoin" prefHeight="35.0"
-                        prefWidth="200.0" text="Join" VBox.vgrow="ALWAYS">
+                <Button fx:id="hostButton" alignment="CENTER"
+                        mnemonicParsing="false" onAction="#handleHost"
+                        prefHeight="35.0" prefWidth="200.0" text="Host"
+                        VBox.vgrow="ALWAYS">
                     <VBox.margin>
                         <Insets bottom="10.0"/>
                     </VBox.margin>
                 </Button>
-                <Button alignment="CENTER" mnemonicParsing="false"
-                        onAction="#handleHost" prefHeight="35.0"
-                        prefWidth="200.0" text="Host" VBox.vgrow="ALWAYS"/>
+                <Button fx:id="joinButton" alignment="CENTER"
+                        mnemonicParsing="false" onAction="#handleJoin"
+                        prefHeight="35.0" prefWidth="200.0" text="Join"
+                        VBox.vgrow="ALWAYS"/>
             </children>
         </VBox>
     </center>

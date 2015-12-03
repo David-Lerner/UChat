@@ -8,11 +8,16 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import uchat.main.CLIMain;
 import uchat.main.Main;
 import uchat.model.Client;
+import uchat.model.Message;
+import uchat.model.Server;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ChatRoomController implements Controller
@@ -49,15 +54,44 @@ public class ChatRoomController implements Controller
     stage.setScene(scene);
     user = (Client) options.get("user");
     userName.setText(user.name);
+    message.requestFocus();
     users.getItems().add(user.name);
     this.stage = stage;
     stage.show();
-    CLIMain.hostChat();
+    Server server = new Server(Main.PORT);
+    Timer t = new Timer(50, new ActionListener()
+    {
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        ArrayList<Message> output = server.getMessages();
+        for (Message m : output) {
+          messageWindow.getItems().add(m.getText());
+//          System.out.println(m.getText());
+        }
+      }
+    });
+    t.start();
+    user = new Client("0.0.0.0", Main.PORT, user.name, null);
+    Timer tt = new Timer(50, new ActionListener()
+    {
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        ArrayList<Message> output = user.getMessages();
+        for (Message m : output) {
+          messageWindow.getItems().add(m.getName() + ": " + m.getText());
+//          System.out.println(m.getName() + ": " + m.getText());
+        }
+      }
+    });
+    tt.start();
+
   }
 
   @FXML
-  private void writeMessage() {
-    messageWindow.getItems().add(user.name + ": " + message.getText());
+  private void handleMessage() {
+    user.sendMessage(message.getText(), null);
+//    System.out.println(message.getText());
+//    messageWindow.getItems().add(user.name + ": " + message.getText());
     message.clear();
   }
 }
