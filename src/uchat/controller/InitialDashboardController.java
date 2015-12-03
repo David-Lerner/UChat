@@ -64,12 +64,5 @@ public class InitialDashboardController implements Controller
     HashMap options = new HashMap();
     options.put("user", user);
     new ChatRoomController().changeStage(stage, options);
-//    Server server = new Server(Main.PORT);
-//    server.run();
-//    try {
-////      user.run();
-//    } catch (IOException e) {
-//      e.printStackTrace();
-//    }
   }
 }
