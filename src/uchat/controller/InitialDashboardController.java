@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import uchat.main.Main;
+import uchat.model.Client;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ public class InitialDashboardController implements Controller
   private Parent parent;
   private Scene scene;
   private Stage stage;
+  private Client user;
   @FXML
   private Text userName;
 
