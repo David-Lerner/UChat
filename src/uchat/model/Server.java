@@ -161,8 +161,8 @@ public class Server implements Runnable
     if (pos >= 0) {
       ServerThread toTerminate = clients[pos];
       //System.out.println("Removing client thread " + ID + " at " + pos);
-      addMessage(new Message("Removing client thread " + ID + " at " + pos,
-          Message.messageType.ALERT));
+      /*addMessage(new Message("Removing client thread " + ID + " at " + pos,
+          Message.messageType.ALERT));*/
       if (pos < clientCount - 1)
         for (int i = pos + 1; i < clientCount; i++)
           clients[i - 1] = clients[i];
@@ -181,8 +181,8 @@ public class Server implements Runnable
   private synchronized void addThread(Socket socket) {
     if (clientCount < clients.length) {
       //System.out.println("Client accepted: " + socket);
-      addMessage(new Message("Client accepted: " + socket,
-          Message.messageType.ALERT));
+      /*addMessage(new Message("Client accepted: " + socket,
+          Message.messageType.ALERT));*/
       clients[clientCount] = new ServerThread(this, socket);
       try {
         clients[clientCount].open();

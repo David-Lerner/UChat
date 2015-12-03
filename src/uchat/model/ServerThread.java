@@ -75,8 +75,8 @@ public class ServerThread extends Thread
     }*/
   public void run() {
     //System.out.println("Server Thread " + ID + " running.");
-    server.addMessage(new Message("Server Thread " + ID + " running.",
-        Message.messageType.ALERT));
+    /*server.addMessage(new Message("Server Thread " + ID + " running.",
+        Message.messageType.ALERT));*/
     while (true) {
       try {
         Message msg = (Message) streamIn.readObject();
