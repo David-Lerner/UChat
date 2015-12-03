@@ -31,6 +31,14 @@
                 <Button fx:id="joinButton" alignment="CENTER"
                         mnemonicParsing="false" onAction="#handleJoin"
                         prefHeight="35.0" prefWidth="200.0" text="Join"
+                        VBox.vgrow="ALWAYS">
+                <VBox.margin>
+                        <Insets bottom="10.0"/>
+                    </VBox.margin>
+                </Button>
+                <Button fx:id="backButton" alignment="CENTER"
+                        mnemonicParsing="false" onAction="#handleBack"
+                        prefHeight="35.0" prefWidth="200.0" text="Back"
                         VBox.vgrow="ALWAYS"/>
             </children>
         </VBox>

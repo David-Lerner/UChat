@@ -17,6 +17,7 @@ import uchat.main.Main;
 import uchat.model.Client;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.HashMap;
 
 public class InitialDashboardController implements Controller
@@ -99,10 +100,27 @@ public class InitialDashboardController implements Controller
     HashMap options = new HashMap();
     options.put("name", name);
     options.put("host", true);
-    options.put("ip", "0.0.0.0");
+    options.put("ip", getLocalAddress());
     new ChatRoomController().changeStage(stage, options);
   }
 
+  private static String getLocalAddress() {
+    String temp = "0.0.0.0";
+    try {
+      Socket s = new Socket("www.google.com", 80);
+      temp = s.getLocalAddress().getHostAddress();
+      s.close();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return temp;
+  }
+  
+  @FXML
+  private void handleBack() {
+      new WelcomeController().launch(stage);
+  }
+  
   @FXML
   private void handleNameButton() {
     TextField editNameTextField = nameButtonToTextField();

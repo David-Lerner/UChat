@@ -98,7 +98,10 @@ public class ChatRoomController implements Controller
       public void actionPerformed(ActionEvent ae) {
         ArrayList<Message> messages = user.getMessages();
         for (Message m : messages) {
-          messageWindow.getItems().add(m.getName() + ": " + m.getText());
+            if (m.getType() == Message.messageType.TEXT)
+                messageWindow.getItems().add(m.getName() + ": " + m.getText());
+            else
+                messageWindow.getItems().add(m.getText());
         }
       }
     });
@@ -115,6 +118,7 @@ public class ChatRoomController implements Controller
       user.sendMessage(message.getText(), null);
     }
     message.clear();
+    messageWindow.scrollTo(messageWindow.getItems().size()-1);
   }
 
   @FXML
@@ -122,8 +126,7 @@ public class ChatRoomController implements Controller
     user.sendMessage(".bye", null);
     HashMap options = new HashMap();
     options.put("name", name);
-    //new InitialDashboardController().changeStage(stage, options);
-    new WelcomeController().launch(stage);
+    new InitialDashboardController().changeStage(stage, options);
   }
 
   private void listUsers(Server server) {
