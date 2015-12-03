@@ -205,8 +205,11 @@ public class CLIMain
         System.out.println("Welcome to UChat. Type any text and press enter to send a message");
         //System.out.println("To send an image, end your message with a *");
         System.out.println("Enter .bye to exit the chat room");
-        System.out.println("Sever tools: Enter .list to list every client in the chat room");
-        System.out.println("Sever tools: Enter .ban followed by an id# obtained from .list to ban that corresponding user."); 
+        if (server != null)
+        {
+            System.out.println("Sever tools: Enter .list to list every client in the chat room");
+            System.out.println("Sever tools: Enter .ban followed by an id# obtained from .list to ban that corresponding user.");
+        }    
         while (true) 
         {     
             Scanner in = new Scanner(System.in);
