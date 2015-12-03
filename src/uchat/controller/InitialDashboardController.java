@@ -25,6 +25,8 @@ public class InitialDashboardController implements Controller
   VBox buttonContainer;
   @FXML
   Button joinButton;
+  @FXML
+  private Button nameButton;
   private Parent parent;
   private Scene scene;
   private Stage stage;
@@ -32,6 +34,7 @@ public class InitialDashboardController implements Controller
   private String name;
   @FXML
   private Text userName;
+  private HashMap options;
 
   public InitialDashboardController() {
     FXMLLoader fxmlLoader = new FXMLLoader(
@@ -47,10 +50,12 @@ public class InitialDashboardController implements Controller
   }
 
   public void changeStage(Stage stage, HashMap options) {
+    this.options = options;
     stage.setScene(scene);
     name = (String) options.get("name");
     userName.setText(name);
     this.stage = stage;
+    nameButton.setVisible(false);
     stage.show();
   }
 
@@ -96,5 +101,30 @@ public class InitialDashboardController implements Controller
     options.put("host", true);
     options.put("ip", "0.0.0.0");
     new ChatRoomController().changeStage(stage, options);
+  }
+
+  @FXML
+  private void handleNameButton() {
+    TextField editNameTextField = nameButtonToTextField();
+    editNameTextField.setOnAction(new EventHandler<ActionEvent>()
+    {
+      @Override
+      public void handle(ActionEvent event) {
+        user.sendMessage(".bye", null);
+        name = editNameTextField.getText().trim();
+        user = new Client((String) options.get("ip"), Main.PORT, name, null);
+      }
+    });
+  }
+
+  private TextField nameButtonToTextField() {
+    buttonContainer.getChildren().remove(nameButton);
+    TextField editNameTextField = new TextField();
+    editNameTextField.setPrefSize(200, 20);
+    editNameTextField.setMaxWidth(200);
+    editNameTextField.setAlignment(Pos.TOP_CENTER);
+    buttonContainer.getChildren().add(0, editNameTextField);
+    editNameTextField.requestFocus();
+    return editNameTextField;
   }
 }

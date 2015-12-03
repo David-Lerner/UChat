@@ -29,6 +29,7 @@ public class ChatRoomController implements Controller
   private Scene scene;
   private Stage stage;
   private Server server;
+  HashMap options;
   @FXML
   private ListView users;
   @FXML
@@ -55,8 +56,8 @@ public class ChatRoomController implements Controller
 
   @Override
   public void changeStage(Stage stage, HashMap options) {
+    this.options = options;
     stage.setScene(scene);
-//    user = (Client) options.get("user");
     name = (String) options.get("name");
     userName.setText(name);
     message.requestFocus();
@@ -64,28 +65,34 @@ public class ChatRoomController implements Controller
     users.getItems().add(name);
     this.stage = stage;
     stage.show();
-    if (options.containsKey("host")) {
-      server = new Server(Main.PORT);
-      Timer t = new Timer(50, new ActionListener()
-      {
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-          ArrayList<Message> messages = server.getMessages();
-          for (Message m : messages) {
-            messageWindow.getItems().add(m.getText());
-          }
-          ArrayList<User> allUsers = server.getUsers();
-          for (User u : allUsers) {
-            if (! users.getItems().contains(u.getName())) {
-              users.getItems().add(u.getName());
-            }
+    if (options.containsKey("host")) host();
+    join();
+  }
+
+  private void host() {
+    server = new Server(Main.PORT);
+    Timer t = new Timer(50, new ActionListener()
+    {
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        ArrayList<Message> messages = server.getMessages();
+        for (Message m : messages) {
+          messageWindow.getItems().add(m.getText());
+        }
+        ArrayList<User> allUsers = server.getUsers();
+        for (User u : allUsers) {
+          if (! users.getItems().contains(u.getName())) {
+            users.getItems().add(u.getName());
           }
         }
-      });
-      t.start();
-    }
+      }
+    });
+    t.start();
+  }
+
+  private void join() {
     user = new Client((String) options.get("ip"), Main.PORT, name, null);
-    Timer tt = new Timer(50, new ActionListener()
+    Timer t = new Timer(50, new ActionListener()
     {
       @Override
       public void actionPerformed(ActionEvent ae) {
@@ -95,8 +102,7 @@ public class ChatRoomController implements Controller
         }
       }
     });
-    tt.start();
-
+    t.start();
   }
 
   @FXML
