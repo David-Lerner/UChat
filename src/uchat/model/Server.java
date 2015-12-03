@@ -274,7 +274,6 @@ public class Server implements Runnable
     
     private boolean isBanned(String address)
     {
-        System.out.println("ban test");
         for (String s : banned)
         {
             if (s.equals(address))
