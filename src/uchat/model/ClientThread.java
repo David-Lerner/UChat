@@ -4,86 +4,65 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
+/**
+ * Chat clientThread class, the client creates this to listen to messages from the server.
+ * 
+ * @author David Lerner
+ * @version 1.0
+ */
 public class ClientThread extends Thread
 {
   private Socket socket = null;
   private Client client = null;
-  /*private DataInputStream streamIn = null;*/
   private ObjectInputStream streamIn = null;
+  private boolean stop;
 
   public ClientThread(Client clientIn, Socket socketIn) {
+      stop = false;
     client = clientIn;
     socket = socketIn;
     open();
     start();
   }
 
-  /*public void open()
-  {
-      try
-      {
-          streamIn  = new DataInputStream(socket.getInputStream());
-      }
-      catch(IOException ioe)
-      {
-          System.out.println("Error getting input stream: " + ioe);
-          client.stop();
-      }
-  }*/
   protected void open() {
     try {
       streamIn = new ObjectInputStream(socket.getInputStream());
     } catch (IOException ioe) {
-      //System.out.println("Error getting input stream: " + ioe);
       client.addMessage(new Message("Error getting input stream: " + ioe,
           Message.messageType.ERROR));
-      client.stop();
+      client.end();
     }
   }
 
-  public void close() {
+  protected void close() {
     try {
       if (streamIn != null)
         streamIn.close();
     } catch (IOException ioe) {
-      //System.out.println("Error closing input stream: " + ioe);
       client.addMessage(new Message("Error closing input stream: " + ioe,
           Message.messageType.ERROR));
     }
   }
 
   @Override
-    /*public void run()
-    {  
-        while (true)
-        {  
-            try
-            {  
-                client.handle(streamIn.readUTF());
-            }
-            catch(IOException ioe)
-            {  
-                System.out.println("Listening error: " + ioe.getMessage());
-                client.stop();
-            }
-        }
-    }*/
   public void run() {
-    while (true) {
+    while (!stop) {
       try {
         client.handle((Message) streamIn.readObject());
       } catch (IOException ioe) {
-        //System.out.println("Listening error: " + ioe.getMessage());
         client.addMessage(new Message("Listening error: " +
             ioe.getMessage(), Message.messageType.ERROR));
-        client.stop();
+        client.end();
       } catch (ClassNotFoundException ex) {
-        //System.out.println("Listening error: " + ex.getMessage());
         client.addMessage(new Message("Listening error: " +
             ex.getMessage(), Message.messageType.ERROR));
-        client.stop();
+        client.end();
       }
     }
   }
 
+  protected void end() {
+      stop = true;
+  }
 }

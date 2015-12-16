@@ -10,6 +10,16 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Chat client class, must also be created for both the one hosting and those who join.
+ * Like server getMessages() must be called to retrieve connection/error messages, 
+ * as well as the chat communications. 
+ * Use a timer, like with the server. 
+ * Additionally, messages must be sent from the UI to be streamed to the server with sendMessage().
+ * 
+ * @author David Lerner
+ * @version 1.0
+ */
 public class Client implements Runnable
 {
   private final Object moniter = new Object();
@@ -17,8 +27,6 @@ public class Client implements Runnable
   public ArrayList<User> users;
   private Socket socket = null;
   private Thread thread = null;
-  /*private DataInputStream streamIn = null;
-  private DataOutputStream streamOut = null;*/
   private ObjectInputStream streamIn = null;
   private ObjectOutputStream streamOut = null;
   private ClientThread client = null;
@@ -28,7 +36,15 @@ public class Client implements Runnable
   private Message fromUI;
   private boolean hasLog;
 
-  public Client(String serverName, int serverPort, String name,
+    /**
+     * Constructor for the Client class. Threads are automatically started at construction.
+     * 
+     * @param serverName the IP address of the server
+     * @param serverPort the application's port number
+     * @param name the user's name
+     * @param pic the user's image (not supported)
+     */
+    public Client(String serverName, int serverPort, String name,
                 BufferedImage pic) {
     this.name = name;
     this.pic = pic;
@@ -36,24 +52,19 @@ public class Client implements Runnable
     id = "";
     users = new ArrayList<>();
     hasLog = false;
-    //System.out.println("Establishing connection. Please wait ...");
     addMessage(new Message("Establishing connection. Please wait ...",
         Message.messageType.ALERT));
     try {
       socket = new Socket(serverName, serverPort);
       id = socket.toString();
       fromUI = new Message(name, socket.getLocalAddress().toString(), Message.messageType.CONNECT);
-      //System.out.println(socket.getLocalAddress().toString());
-      //System.out.println("Connected: " + socket);
       addMessage(new Message("Connected: " + socket,
           Message.messageType.ALERT));
       start();
     } catch (UnknownHostException uhe) {
-      //System.out.println("Host unknown: " + uhe.getMessage());
       addMessage(new Message("Host unknown: " + uhe.getMessage(),
           Message.messageType.ERROR));
     } catch (IOException ioe) {
-      //System.out.println("Unexpected exception: " + ioe.getMessage());
       addMessage(new Message("Unexpected exception: " + ioe.getMessage(),
           Message.messageType.ERROR));
     }
@@ -75,34 +86,9 @@ public class Client implements Runnable
   }
 
   @Override
-    /*public void run()
-    {  
-        System.out.println("run");
-        while (thread != null)
-        {  
-            try
-            {
-                Scanner in = new Scanner(System.in);
-                String temp = in.nextLine();
-                streamOut.writeUTF(temp);
-                //streamOut.writeUTF(streamIn.readLine());
-                streamOut.flush();
-                
-            }
-            catch(IOException ioe)
-            {  
-                System.out.println("Sending error: " + ioe.getMessage());
-                stop();
-            }
-        }
-    }*/
   public void run() {
     while (thread != null) {
       try {
-                /*Scanner in = new Scanner(System.in);
-                String temp = in.nextLine();
-                Message msg = new Message(name + ": " + temp, id, image);
-                streamOut.writeObject(msg);*/
         synchronized (moniter) {
           if (hasLog)
             moniter.wait();
@@ -114,12 +100,10 @@ public class Client implements Runnable
           streamOut.writeObject(msg);
           streamOut.flush();
         }
-        //Thread.sleep(random.nextInt(500));
       } catch (IOException ioe) {
-        //System.out.println("Sending error: " + ioe.getMessage());
         addMessage(new Message("Sending error: " + ioe.getMessage(),
             Message.messageType.ERROR));
-        stop();
+        end();
       } catch (InterruptedException ie) {
         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ie);
       }
@@ -148,42 +132,19 @@ public class Client implements Runnable
     }
   }
 
-  /*public void handle(String msg)
-  {
-      if (msg.equals(".bye"))
-      {
-          System.out.println("Good bye. Press RETURN to exit ...");
-          stop();
-      }
-      else
-          System.out.println(msg);
-  }*/
   protected void handle(Message msg) {
     if (msg.getType() == Message.messageType.EXIT) {
-      stop();
+      end();
     } else {
       if (msg.getId().equals(id))
         addMessage(new Message("(You) " + msg.getName(), msg.getText(),
             msg.getId(), msg.getPicture(), msg.getImage()));
       else
         addMessage(msg);
-      //System.out.println(msg.getName()+": "+msg.getText());
     }
   }
 
-  /*public void start() throws IOException
-  {
-      streamIn = new DataInputStream(System.in);
-      streamOut = new DataOutputStream(socket.getOutputStream());
-      if (thread == null)
-      {
-          client = new ClientThread(this, socket);
-          thread = new Thread(this);
-          thread.start();
-      }
-  }*/
   public void start() throws IOException {
-    //streamIn = new ObjectInputStream(System.in);
     streamOut = new ObjectOutputStream(socket.getOutputStream());
     if (thread == null) {
       client = new ClientThread(this, socket);
@@ -192,9 +153,8 @@ public class Client implements Runnable
     }
   }
 
-  public void stop() {
+  protected void end() {
     if (thread != null) {
-      thread.stop();
       thread = null;
     }
     try {
@@ -205,15 +165,19 @@ public class Client implements Runnable
       if (socket != null)
         socket.close();
     } catch (IOException ioe) {
-      //System.out.println("Error closing ...");
       addMessage(new Message("Error closing: " + ioe.getMessage(),
           Message.messageType.ERROR));
     }
     client.close();
-    client.stop();
+    client.end();
   }
 
-  public String getID() {
+    /**
+     * Gets the IP address and port number of the this client as a unique ID.
+     * 
+     * @return a string containing the IP address and port number of the socket this client uses 
+     */
+    public String getID() {
     return id;
   }
 

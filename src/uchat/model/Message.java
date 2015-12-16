@@ -4,7 +4,11 @@ import java.awt.image.BufferedImage;
 import java.io.Serializable;
 
 /**
- * @author David
+ * Represents the messages the user can see from the client/server.
+ * This includes chat, connection, and error messages.
+ * 
+ * @author David Lerner
+ * @version 1.0
  */
 public class Message implements Serializable
 {

@@ -1,9 +1,10 @@
 package uchat.model;
 
 /**
- * Used to hold information about the users in a chat room
+ * Used to hold information about the users in a chat room.
  *
- * @author David
+ * @author David Lerner
+ * @version 1.0
  */
 public class User
 {
