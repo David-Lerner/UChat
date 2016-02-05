@@ -1,6 +1,14 @@
 # About
+UChat is a simple chat program that lets its users chat over a local network  
+Features:  
+-Joining/hosting a chat room  
+-Chatting with multiple users  
+-Changing your username  
+-Having a list users in the chat room  
+-The host may ban users  
+
 # Installation
-To run the command line version of UChat, follow the following steps:  
+To install and run UChat, follow these steps:  
 1. Download the ZIP source files from Github  
 2. Unzip the files  
 3. Open the command line and navigate to within the src folder  
